@@ -5,7 +5,7 @@ import attr
 import scipy.sparse as sp
 
 from conferences.cikm.cfgan.our_implementation.constants import CFGANBenchmarks, CFGANDatasetMode
-from conferences.cikm.cfgan.our_implementation.data.CFGANDatasetReader import CFGANDatasetReader
+from conferences.cikm.cfgan.our_implementation.dataset_reader.CFGANDatasetReader import CFGANDatasetReader
 
 
 @attr.s(frozen=True, kw_only=True)

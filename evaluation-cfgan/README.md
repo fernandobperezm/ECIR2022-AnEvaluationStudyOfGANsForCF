@@ -27,7 +27,9 @@ in our paper.
 
 Our porting of CFGAN is inside the `conferences.cikm.cfgan.our_implementation` folder. There you'll find the following 
 folders:
-- `data`: Contains the [CFGANDatasetReader]() class to read the original CFGAN data splits.
+- `dataset_reader`: Contains the 
+  [CFGANDatasetReader](conferences/cikm/cfgan/our_implementation/dataset_reader/CFGANDatasetReader.py) class to read the
+  original CFGAN data splits.
 - `models`: Contains the Tensorflow implementation of CFGAN. The original source code needs Tensorflow v1. We migrated
   the source code to Tensorflow v2 through the compatibility layer, i.e., it runs the same source code in Tensorflow v1
   but under a Tensorflow v2 installation. There you'll find a class for each CFGAN model mentioned in the article

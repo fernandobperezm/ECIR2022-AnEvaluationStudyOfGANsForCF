@@ -3,12 +3,13 @@ import uuid
 from typing import Any
 
 import pandas as pd
-from distributed import Future, Client
-from recsys_framework.Recommenders.DataIO import DataIO
-from recsys_framework.Utils.conf_logging import get_logger
 
 import experiments.commons as commons
+import conferences.cikm.cfgan.our_implementation.original.cfgan as original_cfgan
 from conferences.cikm.cfgan.our_implementation.constants import CFGANBenchmarks
+from recsys_framework.Recommenders.DataIO import DataIO
+from recsys_framework.Utils.conf_dask import DaskInterface
+from recsys_framework.Utils.conf_logging import get_logger
 
 logger = get_logger(__name__)
 
@@ -167,8 +168,6 @@ def _run_iteration_original_cfgan_code(
     execution_number: int,
     results_folder: str
 ) -> None:
-    from conferences.cikm.cfgan.our_implementation.original.cfgan import run_original
-
     all_results_filename = (
         f"CFGAN_original_implementation_execution_{execution_number}.zip"
     )
@@ -183,7 +182,7 @@ def _run_iteration_original_cfgan_code(
     (
         hyper_parameters, results_dict, _, _,
         _, _, _, _, _, _,
-    ) = run_original(
+    ) = original_cfgan.run_original(
         benchmark=benchmark.value
     )
 
@@ -200,9 +199,7 @@ def _run_iteration_original_cfgan_code(
 
 
 def run_replicability_experiments(
-    dask_client: Client,
-    dask_experiments_futures: list[Future],
-    dask_experiments_futures_info: dict[str, dict[str, Any]],
+    dask_interface: DaskInterface,
 ) -> None:
     for priority, benchmark in zip(commons.DATASET_PRIORITIES, commons.BENCHMARKS):
         results_folder = EXPERIMENTS_REPLICATION_DIR.format(
@@ -210,25 +207,25 @@ def run_replicability_experiments(
         )
 
         for execution_number in range(NUMBER_OF_EXECUTIONS):
-            future_execution = dask_client.submit(
-                _run_iteration_original_cfgan_code,
-                key=(
+            dask_interface.submit_job(
+                job_key=(
                     f"_run_iteration_original_cfgan_code"
                     f"|{benchmark.value}"
                     f"|{execution_number}"
                     f"|{uuid.uuid4()}"
                 ),
-                pure=False,
-                priority=priority,
-                benchmark=benchmark,
-                execution_number=execution_number,
-                results_folder=results_folder,
+                job_priority=priority,
+                job_info={
+                    "benchmark": benchmark.value,
+                    "execution_number": execution_number,
+                },
+                method=_run_iteration_original_cfgan_code,
+                method_kwargs={
+                    "benchmark": benchmark,
+                    "execution_number": execution_number,
+                    "results_folder": results_folder,
+                }
             )
-            dask_experiments_futures.append(future_execution)
-            dask_experiments_futures_info[future_execution.key] = {
-                "benchmark": benchmark.value,
-                "execution_number": execution_number,
-            }
 
 
 ####################################################################################################

@@ -1,17 +1,14 @@
 #!/usr/bin/env python3
 from __future__ import annotations
 
-from typing import Any
-
-from distributed import Future, as_completed
-from recsys_framework.Utils.conf_dask import configure_dask_cluster, close_dask_client
-from recsys_framework.Utils.conf_logging import get_logger
 from tap import Tap
 
 from experiments.commons import create_necessary_folders
 from experiments.concerns import run_concerns_experiments, print_concerns_results
 from experiments.replication import run_replicability_experiments, print_replicability_results
 from experiments.reproducibility import run_reproducibility_experiments, print_reproducibility_results
+from recsys_framework.Utils.conf_dask import configure_dask_cluster
+from recsys_framework.Utils.conf_logging import get_logger
 
 
 class ConsoleArguments(Tap):
@@ -60,22 +57,6 @@ class ConsoleArguments(Tap):
 #                                            MAIN                                                  #
 ####################################################################################################
 ####################################################################################################
-def wait_for_experiments_to_finish():
-    future: Future
-    for future in as_completed(dask_experiments_futures):
-        experiment_info = dask_experiments_futures_info[future.key]
-
-        try:
-            future.result()
-            logger.info(
-                f"Successfully finished this experiment: {experiment_info}"
-            )
-        except:
-            logger.exception(
-                f"The following experiment failed: {experiment_info}"
-            )
-
-
 if __name__ == '__main__':
     input_flags = ConsoleArguments().parse_args()
 
@@ -83,25 +64,18 @@ if __name__ == '__main__':
 
     create_necessary_folders()
 
-    DASK_CLIENT = configure_dask_cluster()
-
-    dask_experiments_futures: list[Future] = []
-    dask_experiments_futures_info: dict[str, dict[str, Any]] = dict()
+    dask_interface = configure_dask_cluster()
 
     if input_flags.run_replicability:
         run_replicability_experiments(
-            dask_client=DASK_CLIENT,
-            dask_experiments_futures=dask_experiments_futures,
-            dask_experiments_futures_info=dask_experiments_futures_info,
+            dask_interface=dask_interface,
         )
 
     if input_flags.run_reproducibility:
         run_reproducibility_experiments(
             include_baselines=input_flags.include_baselines,
             include_cfgan=input_flags.include_cfgan,
-            dask_client=DASK_CLIENT,
-            dask_experiments_futures=dask_experiments_futures,
-            dask_experiments_futures_info=dask_experiments_futures_info,
+            dask_interface=dask_interface,
         )
 
     if input_flags.run_concerns:
@@ -109,12 +83,10 @@ if __name__ == '__main__':
             include_cfgan_with_random_noise=input_flags.include_cfgan_with_random_noise,
             include_cfgan_with_class_condition=input_flags.include_cfgan_with_class_condition,
             include_cfgan_without_early_stopping=input_flags.include_cfgan_without_early_stopping,
-            dask_client=DASK_CLIENT,
-            dask_experiments_futures=dask_experiments_futures,
-            dask_experiments_futures_info=dask_experiments_futures_info,
+            dask_interface=dask_interface,
         )
 
-    wait_for_experiments_to_finish()
+    dask_interface.wait_for_jobs()
 
     if input_flags.print_replicability_results:
         print_replicability_results()
@@ -125,6 +97,4 @@ if __name__ == '__main__':
     if input_flags.print_concerns_results:
         print_concerns_results()
 
-    close_dask_client(
-        client=DASK_CLIENT,
-    )
+    dask_interface.close()

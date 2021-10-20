@@ -1,13 +1,13 @@
 import os
 import socket
-from typing import Optional
+from typing import Optional, Any, Callable
 
 import distributed
 import psutil
 import toml
 import attr
 from dask.distributed import Client, LocalCluster
-from distributed import Scheduler
+from distributed import Scheduler, Future, as_completed
 
 from recsys_framework.Utils.conf_logging import get_logger
 
@@ -22,6 +22,84 @@ class DaskConfig:
     num_workers: int = attr.ib()
     threads_per_worker: int = attr.ib()
     memory_limit: int = attr.ib()
+
+
+class DaskInterface:
+    def __init__(self, client: Client) -> None:
+        self.__client = client
+        self._job_futures: list[Future] = []
+        self._job_futures_info: dict[str, dict[str, Any]] = dict()
+        self._is_closed: bool = False
+
+    @property
+    def _client(self) -> Client:
+        if self._is_closed:
+            raise ValueError(
+                "The client's interface is already closed. You need to create a new DaskInterface instance by calling "
+                "configure_dask_cluster() again."
+            )
+        return self.__client
+
+    def submit_job(
+        self,
+        job_key: str,
+        job_priority: int,
+        job_info: dict[str, Any],
+        method: Callable[[Any], None],
+        method_kwargs: dict[str, Any],
+    ):
+        job_future = self._client.submit(
+            func=method,
+            pure=False,
+            key=job_key,
+            priority=job_priority,
+            **method_kwargs,
+        )
+        self._job_futures.append(job_future)
+        self._job_futures_info[job_future.key] = job_info
+
+    def scatter_data(
+        self,
+        data: Any,
+    ) -> Future:
+        return self._client.scatter(
+            data=data,
+            broadcast=True,
+
+        )
+
+    def wait_for_jobs(self) -> None:
+        future: Future
+        for future in as_completed(self._job_futures):
+            experiment_info = self._job_futures_info[future.key]
+
+            try:
+                future.result()
+                logger.info(
+                    f"Successfully finished this job: {experiment_info}"
+                )
+            except:
+                logger.exception(
+                    f"The following job failed: {experiment_info}"
+                )
+
+    def close(self):
+        num_tasks = self._client.run_on_scheduler(
+            _number_of_tasks_in_scheduler
+        )
+
+        if num_tasks > 0:
+            logger.info(
+                f"Will not shutdown Dask's scheduler due to {num_tasks} running at the moment."
+            )
+            return
+
+        logger.info(
+            f"Shutting down dask client. No more pending tasks."
+        )
+
+        self._client.close()
+        self._is_closed = True
 
 
 def _load_logger_config() -> DaskConfig:
@@ -56,7 +134,7 @@ def _is_scheduler_alive(
             return True
 
 
-def configure_dask_cluster() -> Client:
+def configure_dask_cluster() -> DaskInterface:
     use_processes = _DASK_CONF.use_processes
     dashboard_address = _DASK_CONF.dashboard_address
     scheduler_port = _DASK_CONF.scheduler_port
@@ -104,7 +182,7 @@ def configure_dask_cluster() -> Client:
         logger.info(
             f"Connecting to already-created scheduler at {scheduler_address}:{scheduler_port}"
         )
-        return Client(
+        client = Client(
             address=f"{scheduler_address}:{scheduler_port}"
         )
     else:
@@ -135,7 +213,10 @@ def configure_dask_cluster() -> Client:
                 scheduler_port=scheduler_port,
             )
         )
-        return client
+
+    return DaskInterface(
+        client=client
+    )
 
 
 def _number_of_tasks_in_scheduler(dask_scheduler: Scheduler) -> int:

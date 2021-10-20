@@ -7,14 +7,6 @@ import attr
 import numpy as np
 import pandas as pd
 import scipy.sparse as sp
-from distributed import Client, Future
-from recsys_framework.Evaluation.Evaluator import EvaluatorHoldout
-from recsys_framework.HyperparameterTuning.SearchAbstractClass import SearchInputRecommenderArgs
-from recsys_framework.HyperparameterTuning.SearchSingleCase import SearchSingleCase
-from recsys_framework.Recommenders.BaseRecommender import BaseRecommender
-from recsys_framework.Recommenders.DataIO import DataIO
-from recsys_framework.Utils.conf_logging import get_logger
-from recsys_framework.Utils.plotting import generate_accuracy_and_beyond_metrics_latex
 
 import experiments.commons as commons
 import experiments.reproducibility as reproducibility
@@ -29,6 +21,14 @@ from conferences.cikm.cfgan.our_implementation.recommenders.ClassConditionCFGANR
     ClassConditionCFGANRecommender
 from conferences.cikm.cfgan.our_implementation.recommenders.RandomNoiseCFGANRecommender import \
     RandomNoiseCFGANRecommender
+from recsys_framework.Evaluation.Evaluator import EvaluatorHoldout
+from recsys_framework.HyperparameterTuning.SearchAbstractClass import SearchInputRecommenderArgs
+from recsys_framework.HyperparameterTuning.SearchSingleCase import SearchSingleCase
+from recsys_framework.Recommenders.BaseRecommender import BaseRecommender
+from recsys_framework.Recommenders.DataIO import DataIO
+from recsys_framework.Utils.conf_dask import DaskInterface
+from recsys_framework.Utils.conf_logging import get_logger
+from recsys_framework.Utils.plotting import generate_accuracy_and_beyond_metrics_latex
 
 logger = get_logger(__name__)
 
@@ -57,12 +57,6 @@ ACCURACY_METRICS_BASELINES_LATEX_DIR = os.path.join(
     LATEX_RESULTS_FOLDER,
     "accuracy_and_beyond_accuracy",
 )
-HYPER_PARAMETER_TUNING_EXPERIMENTS_CONCERNS_DIR = os.path.join(
-    BASE_FOLDER,
-    "experiments",
-    "hyper_parameter_tuning",
-    ""
-)
 SINGLE_EXECUTION_EXPERIMENTS_CONCERNS_DIR = os.path.join(
     BASE_FOLDER,
     "experiments",
@@ -74,7 +68,6 @@ commons.FOLDERS.add(BASE_FOLDER)
 commons.FOLDERS.add(LATEX_RESULTS_FOLDER)
 commons.FOLDERS.add(ACCURACY_METRICS_BASELINES_LATEX_DIR)
 commons.FOLDERS.add(ARTICLE_ACCURACY_METRICS_BASELINES_LATEX_DIR)
-commons.FOLDERS.add(HYPER_PARAMETER_TUNING_EXPERIMENTS_CONCERNS_DIR)
 commons.FOLDERS.add(SINGLE_EXECUTION_EXPERIMENTS_CONCERNS_DIR)
 
 EPOCHS_COMPARISON_RESULTS_FILE = os.path.join(
@@ -403,22 +396,17 @@ def run_concerns_experiments(
     include_cfgan_with_random_noise: bool,
     include_cfgan_with_class_condition: bool,
     include_cfgan_without_early_stopping: bool,
-    dask_client: Client,
-    dask_experiments_futures: list[Future],
-    dask_experiments_futures_info: dict[str, dict[str, Any]],
+    dask_interface: DaskInterface,
 ) -> None:
     for dataset in commons.datasets():
-        future_urm_train = dask_client.scatter(
+        future_urm_train = dask_interface.scatter_data(
             data=dataset.urm_train,
-            broadcast=True,
         )
-        future_urm_validation = dask_client.scatter(
+        future_urm_validation = dask_interface.scatter_data(
             data=dataset.urm_validation,
-            broadcast=True,
         )
-        future_urm_test = dask_client.scatter(
+        future_urm_test = dask_interface.scatter_data(
             data=dataset.urm_test,
-            broadcast=True,
         )
 
         if include_cfgan_with_random_noise:
@@ -427,10 +415,8 @@ def run_concerns_experiments(
                     cfgan_mode=cfgan_mode,
                     urm=dataset.urm_train
                 ):
-                    future_hyper_parameter_search = dask_client.submit(
-                        _run_experiment_cfgan_with_random_noise,
-                        pure=False,
-                        key=(
+                    dask_interface.submit_job(
+                        job_key=(
                             f"_run_experiment_cfgan_with_random_noise"
                             f"|{dataset.benchmark.value}"
                             f"|RandomNoiseCFGANRecommender"
@@ -439,31 +425,30 @@ def run_concerns_experiments(
                             f"|{noise_size}"
                             f"|{uuid.uuid4()}"
                         ),
-                        priority=dataset.priority,
-                        benchmark=dataset.benchmark,
-                        urm_train=future_urm_train,
-                        urm_validation=future_urm_validation,
-                        urm_test=future_urm_test,
-                        cfgan_mode=cfgan_mode,
-                        cfgan_mask_type=cfgan_mask_type,
-                        cfgan_noise_size=noise_size,
+                        job_priority=dataset.priority,
+                        job_info={
+                            "recommender": "RandomNoiseCFGANRecommender",
+                            "benchmark": dataset.benchmark.value,
+                            "cfgan_mode": cfgan_mode.value,
+                            "cfgan_mask_type": cfgan_mask_type.value,
+                            "cfgan_noise_size": noise_size,
+                        },
+                        method=_run_experiment_cfgan_with_random_noise,
+                        method_kwargs={
+                            "benchmark": dataset.benchmark,
+                            "urm_train": future_urm_train,
+                            "urm_validation": future_urm_validation,
+                            "urm_test": future_urm_test,
+                            "cfgan_mode": cfgan_mode,
+                            "cfgan_mask_type": cfgan_mask_type,
+                            "cfgan_noise_size": noise_size,
+                        }
                     )
-
-                    dask_experiments_futures.append(future_hyper_parameter_search)
-                    dask_experiments_futures_info[future_hyper_parameter_search.key] = {
-                        "recommender": "RandomNoiseCFGANRecommender",
-                        "benchmark": dataset.benchmark.value,
-                        "cfgan_mode": cfgan_mode.value,
-                        "cfgan_mask_type": cfgan_mask_type.value,
-                        "cfgan_noise_size": noise_size,
-                    }
 
         if include_cfgan_with_class_condition:
             for cfgan_mode, cfgan_mask_type in reproducibility.cfgan_hyper_parameter_search_settings():
-                future_hyper_parameter_search = dask_client.submit(
-                    _run_experiment_cfgan_with_class_condition,
-                    pure=False,
-                    key=(
+                dask_interface.submit_job(
+                    job_key=(
                         f"_run_experiment_cfgan_with_class_condition"
                         f"|{dataset.benchmark.value}"
                         f"|ClassConditionCFGANRecommender"
@@ -471,29 +456,28 @@ def run_concerns_experiments(
                         f"|{cfgan_mask_type.value}"
                         f"|{uuid.uuid4()}"
                     ),
-                    priority=dataset.priority,
-                    benchmark=dataset.benchmark,
-                    cfgan_mode=cfgan_mode,
-                    cfgan_mask_type=cfgan_mask_type,
-                    urm_train=future_urm_train,
-                    urm_validation=future_urm_validation,
-                    urm_test=future_urm_test,
+                    job_priority=dataset.priority,
+                    job_info={
+                        "recommender": "ClassConditionCFGANRecommender",
+                        "benchmark": dataset.benchmark.value,
+                        "cfgan_mode": cfgan_mode.value,
+                        "cfgan_mask_type": cfgan_mask_type.value,
+                    },
+                    method=_run_experiment_cfgan_with_class_condition,
+                    method_kwargs={
+                        "benchmark": dataset.benchmark,
+                        "urm_train": future_urm_train,
+                        "urm_validation": future_urm_validation,
+                        "urm_test": future_urm_test,
+                        "cfgan_mode": cfgan_mode,
+                        "cfgan_mask_type": cfgan_mask_type,
+                    }
                 )
-
-                dask_experiments_futures.append(future_hyper_parameter_search)
-                dask_experiments_futures_info[future_hyper_parameter_search.key] = {
-                    "recommender": "ClassConditionCFGANRecommender",
-                    "benchmark": dataset.benchmark.value,
-                    "cfgan_mode": cfgan_mode.value,
-                    "cfgan_mask_type": cfgan_mask_type.value,
-                }
 
         if include_cfgan_without_early_stopping:
             for cfgan_mode, cfgan_mask_type in reproducibility.cfgan_hyper_parameter_search_settings():
-                future_hyper_parameter_search = dask_client.submit(
-                    _run_experiment_cfgan_without_early_stopping,
-                    pure=False,
-                    key=(
+                dask_interface.submit_job(
+                    job_key=(
                         f"_run_experiment_cfgan_without_early_stopping"
                         f"|{dataset.benchmark.value}"
                         f"|CFGANRecommender"
@@ -501,22 +485,23 @@ def run_concerns_experiments(
                         f"|{cfgan_mask_type.value}"
                         f"|{uuid.uuid4()}"
                     ),
-                    priority=dataset.priority,
-                    benchmark=dataset.benchmark,
-                    cfgan_mode=cfgan_mode,
-                    cfgan_mask_type=cfgan_mask_type,
-                    urm_train=future_urm_train,
-                    urm_validation=future_urm_validation,
-                    urm_test=future_urm_test,
+                    job_priority=dataset.priority,
+                    job_info={
+                        "recommender": "CFGANRecommender",
+                        "benchmark": dataset.benchmark.value,
+                        "cfgan_mode": cfgan_mode.value,
+                        "cfgan_mask_type": cfgan_mask_type.value,
+                    },
+                    method=_run_experiment_cfgan_without_early_stopping,
+                    method_kwargs={
+                        "benchmark": dataset.benchmark,
+                        "urm_train": future_urm_train,
+                        "urm_validation": future_urm_validation,
+                        "urm_test": future_urm_test,
+                        "cfgan_mode": cfgan_mode,
+                        "cfgan_mask_type": cfgan_mask_type,
+                    }
                 )
-
-                dask_experiments_futures.append(future_hyper_parameter_search)
-                dask_experiments_futures_info[future_hyper_parameter_search.key] = {
-                    "recommender": "CFGANRecommenderEarlyStopping",
-                    "benchmark": dataset.benchmark.value,
-                    "cfgan_mode": cfgan_mode.value,
-                    "cfgan_mask_type": cfgan_mask_type.value,
-                }
 
 
 ####################################################################################################
