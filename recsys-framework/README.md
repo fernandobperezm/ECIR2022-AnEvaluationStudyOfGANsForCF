@@ -1,10 +1,10 @@
 # Recommender Systems Evaluation Framework
 
 This repository is a modified clone of 
-[this evaluation framework](https://github.com/MaurizioFD/RecSys2019_DeepLearning_Evaluation). This repository *does not* contain
-any experiment, instead, it is used as a *package* by other repositories/projects. This repository *contains* the 
-implementation of baselines and the source code related to run hyper-parameter tuning of baselines, evaluation, data 
-fetching, utilities, plotting, and more.
+[this evaluation framework](https://github.com/MaurizioFD/RecSys2019_DeepLearning_Evaluation). This repository 
+*does not* contain any experiment, instead, it is used as a RecSys Framework (*as a Python package*) by other 
+repositories/projects. This repository *contains* the implementation of baselines and the source code related to run 
+hyper-parameter tuning of baselines, evaluation, data fetching, utilities, plotting, and more.
 
 A small example on how to use this repo is in `run_example_usage.py`.
 
@@ -36,8 +36,8 @@ execution crashes, please do not hesitate and raise an issue in the repo.
 
 - Download repo:
   ```bash
-  git clone https://github.com/fernandobperezm/evaluation-cfgan.git
-  cd evaluation-cfgan/
+  git clone https://github.com/fernandobperezm/an-evaluation-of-GAN-for-CF.git
+  cd an-evaluation-of-GAN-for-CF/recsys-framework/
   ```
 - Install dependencies for `pyenv`, `poetry`, and the repo source code (this includes a C/C++ compiler).
   ```bash

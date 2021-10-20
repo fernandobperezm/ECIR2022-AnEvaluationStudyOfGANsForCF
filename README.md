@@ -11,11 +11,11 @@ this research direction in evaluation and reproducibility, we are open to collab
 our project on [ResearchGate](https://www.researchgate.net/project/Recommender-systems-reproducibility-and-evaluation)
 
 This repo is divided in two folders:
-- [CFGAN Evaluation](evaluation-cfgan/README.md): Contains the implementation of CFGAN and the experiments presented in 
+- [evaluation-cfgan](evaluation-cfgan/README.md): Contains the implementation of CFGAN and the experiments presented in 
   the article.
-- [RecSys Evaluation Framework](recsys-framework/README.md): Contains the implementation of baselines, hyper-parameter 
+- [recsys-framework](recsys-framework/README.md): Contains the implementation of baselines, hyper-parameter 
   tuning, and evaluation used in the article.
 
-To proceed with the installation and read instructions to execute our experiments, please refer to the 
-[README in evaluation-cfgan](evaluation-cfgan/README.md). This README is a proxy to the one inside the 
-`evaluation-cfgan` folder.
+You'll find instructions to install this project and run the experiments in the  
+[README inside evaluation-cfgan](evaluation-cfgan/README.md), in fact, all commands must be run inside 
+the `evaluation-cfgan` folder.

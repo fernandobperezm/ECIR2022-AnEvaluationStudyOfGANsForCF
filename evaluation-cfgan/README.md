@@ -58,7 +58,7 @@ The `experiments` folder contains scripts related to each of our experiments in 
 ## Installation
 
 Note that this repository requires `Python 3.9`, `poetry`, `Cython`, and the 
-[recsys_framework](../main-repo-evaluation/README.md).
+[recsys_framework](../recsys-framework/README.md).
 
 All Cython algorithms needs to be compiled for your specific environment: 
 - [Windows](#windows-installation)
@@ -71,8 +71,8 @@ through all the steps needed to execute our experiments.
 ### Linux Installation
 - Download repo:
   ```bash
-  git clone https://github.com/fernandobperezm/evaluation-cfgan.git
-  cd evaluation-cfgan/
+  git clone https://github.com/fernandobperezm/an-evaluation-of-GAN-for-CF.git
+  cd an-evaluation-of-GAN-for-CF/evaluation-cfgan/
   ```
 - Install dependencies for `pyenv`, `poetry`, and the repo source code (this includes a C/C++ compiler).
   ```bash
