@@ -1,0 +1,47 @@
+[tool.mypy]
+python_version = "~3.9"
+ignore_missing_imports = true
+
+[dask]
+use_processes = true
+dashboard_address = ":8787"
+scheduler_port = 8786
+num_workers = 4
+threads_per_worker = 1
+memory_limit = 0
+
+[logs]
+dir_name = "logs"
+file_name = "evaluation_cfgan.log"
+formatter = "%(process)d|%(asctime)s|%(levelname)s|%(module)s|%(funcName)s|%(lineno)d|%(message)s"
+
+[tool.poetry]
+name = "evaluation_cfgan"
+version = "1.0.0+ecir-2022-evaluation-cfgan"
+description = ""
+authors = [
+    "Fernando Benjamín PÉREZ MAURERA <fernandobenjamin.perez@polimi.it>",
+    "Maurizio FERRARI DACREMA <maurizio.ferrari@polimi.it>",
+]
+readme = "README.md"
+packages = [
+    { include = "conferences" },
+    { include = "experiments" },
+]
+
+[tool.poetry.dependencies]
+python = "~3.9"
+typed-argument-parser = "~1.7.1"
+tensorflow = "~2.6.0"
+recsys_framework = { path = "../recsys-framework/", develop = false }
+
+[tool.poetry.dev-dependencies]
+mypy = "^0.910"
+black = "^21.7b0"
+pytest = "^6.2.4"
+memory-profiler = "^0.58.0"
+types-toml = "^0.10.0"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"

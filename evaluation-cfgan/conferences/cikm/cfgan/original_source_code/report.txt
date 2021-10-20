@@ -1,0 +1,99 @@
+TensorFlow 2.0 Upgrade Script
+-----------------------------
+Converted 6 files
+Detected 2 issues that require attention
+--------------------------------------------------------------------------------
+--------------------------------------------------------------------------------
+File: ../CFGAN_original/models.py
+--------------------------------------------------------------------------------
+../CFGAN_original/models.py:36:12: WARNING: tf.get_variable requires manual check. tf.get_variable returns ResourceVariables by default in 2.0, which have well-defined semantics and are stricter about shapes. You can disable this behavior by passing use_resource=False, or by calling tf.compat.v1.disable_resource_variables().
+../CFGAN_original/models.py:41:12: WARNING: tf.get_variable requires manual check. tf.get_variable returns ResourceVariables by default in 2.0, which have well-defined semantics and are stricter about shapes. You can disable this behavior by passing use_resource=False, or by calling tf.compat.v1.disable_resource_variables().
+================================================================================
+Detailed log follows:
+
+================================================================================
+================================================================================
+Input tree: '../CFGAN_original'
+================================================================================
+--------------------------------------------------------------------------------
+Processing file '../CFGAN_original/models.py'
+ outputting to '../CFGAN_original_migrated/models.py'
+--------------------------------------------------------------------------------
+
+16:0: INFO: Renamed 'tf.set_random_seed' to 'tf.compat.v1.set_random_seed'
+31:9: INFO: Renamed 'tf.variable_scope' to 'tf.compat.v1.variable_scope'
+36:12: WARNING: tf.get_variable requires manual check. tf.get_variable returns ResourceVariables by default in 2.0, which have well-defined semantics and are stricter about shapes. You can disable this behavior by passing use_resource=False, or by calling tf.compat.v1.disable_resource_variables().
+36:12: INFO: Renamed 'tf.get_variable' to 'tf.compat.v1.get_variable'
+39:24: INFO: tf.random_uniform_initializer requires manual check. Initializers no longer have the dtype argument in the constructor or partition_info argument in the __call__ method.
+The calls have been converted to compat.v1 for safety (even though they may already have been correct).
+39:24: INFO: Renamed 'tf.random_uniform_initializer' to 'tf.compat.v1.random_uniform_initializer'
+41:12: WARNING: tf.get_variable requires manual check. tf.get_variable returns ResourceVariables by default in 2.0, which have well-defined semantics and are stricter about shapes. You can disable this behavior by passing use_resource=False, or by calling tf.compat.v1.disable_resource_variables().
+41:12: INFO: Renamed 'tf.get_variable' to 'tf.compat.v1.get_variable'
+42:44: INFO: tf.random_uniform_initializer requires manual check. Initializers no longer have the dtype argument in the constructor or partition_info argument in the __call__ method.
+The calls have been converted to compat.v1 for safety (even though they may already have been correct).
+42:44: INFO: Renamed 'tf.random_uniform_initializer' to 'tf.compat.v1.random_uniform_initializer'
+61:14: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+78:14: INFO: Added keywords to args of function 'tf.reduce_mean'
+79:8: INFO: Added keywords to args of function 'tf.reduce_sum'
+79:8: INFO: Renamed keyword argument for tf.reduce_sum from keep_dims to keepdims
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file '../CFGAN_original/cfgan.py'
+ outputting to '../CFGAN_original_migrated/cfgan.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file '../CFGAN_original/evaluation.py'
+ outputting to '../CFGAN_original_migrated/evaluation.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file '../CFGAN_original/parameters.py'
+ outputting to '../CFGAN_original_migrated/parameters.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file '../CFGAN_original/trainer.py'
+ outputting to '../CFGAN_original_migrated/trainer.py'
+--------------------------------------------------------------------------------
+
+54:20: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+60:15: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+66:19: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+81:17: INFO: Renamed 'tf.get_collection' to 'tf.compat.v1.get_collection'
+81:35: INFO: Renamed 'tf.GraphKeys' to 'tf.compat.v1.GraphKeys'
+82:17: INFO: Renamed 'tf.get_collection' to 'tf.compat.v1.get_collection'
+82:35: INFO: Renamed 'tf.GraphKeys' to 'tf.compat.v1.GraphKeys'
+85:17: INFO: Added keywords to args of function 'tf.reduce_mean'
+95:24: INFO: Renamed 'tf.train.GradientDescentOptimizer' to 'tf.compat.v1.train.GradientDescentOptimizer'
+99:24: INFO: Renamed 'tf.train.AdamOptimizer' to 'tf.compat.v1.train.AdamOptimizer'
+104:22: INFO: Added keywords to args of function 'tf.reduce_mean'
+109:22: INFO: Added keywords to args of function 'tf.reduce_mean'
+121:24: INFO: Renamed 'tf.train.GradientDescentOptimizer' to 'tf.compat.v1.train.GradientDescentOptimizer'
+125:24: INFO: Renamed 'tf.train.AdamOptimizer' to 'tf.compat.v1.train.AdamOptimizer'
+130:27: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+131:22: INFO: Renamed 'tf.placeholder' to 'tf.compat.v1.placeholder'
+136:21: INFO: Renamed 'tf.ConfigProto' to 'tf.compat.v1.ConfigProto'
+139:21: INFO: Renamed 'tf.ConfigProto' to 'tf.compat.v1.ConfigProto'
+141:15: INFO: Renamed 'tf.Session' to 'tf.compat.v1.Session'
+142:17: INFO: Renamed 'tf.global_variables_initializer' to 'tf.compat.v1.global_variables_initializer'
+--------------------------------------------------------------------------------
+
+--------------------------------------------------------------------------------
+Processing file '../CFGAN_original/data.py'
+ outputting to '../CFGAN_original_migrated/data.py'
+--------------------------------------------------------------------------------
+
+
+--------------------------------------------------------------------------------
+

@@ -1,0 +1,74 @@
+[logs]
+dir_name = "logs"
+file_name = "recsys_framework.log"
+formatter = "%(process)d|%(asctime)s|%(levelname)s|%(module)s|%(funcName)s|%(lineno)d|%(message)s"
+
+[tool.mypy]
+python_version = "~3.9"
+ignore_missing_imports = true
+
+[tool.poetry]
+name = "recsys_framework"
+version = "1.0.0+ecir-2022-evaluation-cfgan"
+description = ""
+authors = [
+    "Fernando Benjamín PEREZ MAURERA <fernandobenjamin.perez@polimi.it>",
+    "Cesare BERNARDIS <cesare.bernardis@polimi.it>",
+    "Maurizio FERRARI DACREMA <maurizio.ferrari@polimi.it>",
+]
+packages = [
+    { include = "recsys_framework" }, # Include the recsys_framework folder as a package.
+]
+include = [
+    { path = "**/*.so" }, # Include compiled cython code in the wheel and tar.gz.
+    { path = "**/*.pyd" }, # Include compiled cython code in the wheel and tar.gz.
+]
+exclude = [
+    { path = "build/*" }, # Include compiled cython code in the wheel and tar.gz. given that we already copy it.
+]
+
+[tool.poetry.dependencies]
+# IMPORTANT: numpy and Cython versions in the `build-system` MUST match the ones used in the `dependencies` section.
+python = "~3.9"
+Cython = "0.29.24"
+numpy = "1.19.5"
+dask = { extras = ["complete"], version = "^2021.7.2" }
+pyarrow = "^4.0.1"
+pandas = "^1.3.3"
+scikit-learn = "^0.24.2"
+scikit-optimize = "^0.8.1"
+matplotlib = "^3.4.2"
+seaborn = "^0.11.1"
+bokeh = "^2.2.0"
+scipy = "^1.7.0"
+nltk = "^3.6.2"
+tqdm = "^4.61.2"
+distributed = "^2021.7.2"
+imageio = "^2.9.0"
+pygifsicle = "^1.0.4"
+toml = "^0.10.2"
+h5py = ">=3.1.0,<3.2.0" # Required like this by Tensorflow 2.6
+mypy = "^0.910"
+lightfm = "^1.16"
+tables = "^3.6.1"
+
+[tool.poetry.dev-dependencies]
+mypy = "^0.910"
+black = "^21.7b0"
+pytest = "^6.2.4"
+memory-profiler = "^0.58.0"
+types-toml = "^0.10.0"
+
+# How to include a script to build the package can be seen here: https://github.com/python-poetry/poetry/issues/11#issuecomment-379484540
+# example pyproject.toml: https://github.com/sdispater/pendulum/blob/master/pyproject.toml
+# example build.py (aka our build.py): https://github.com/sdispater/pendulum/blob/master/build.py
+[tool.poetry.build]
+generate-setup-file = false
+script = "build.py"
+
+[build-system]
+# IMPORTANT: numpy and Cython versions in the `build-system` MUST match the ones used in the `dependencies` section.
+requires = ["setuptools", "numpy==1.19.5", "Cython==0.29.24", "poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
+
+
