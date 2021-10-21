@@ -116,12 +116,11 @@ def get_best_hyper_parameters_of_tuned_cfgan_model(
 
 def calculate_random_noise_sizes(
     cfgan_mode: CFGANMode,
-    urm: sp.csr_matrix,
+    num_rows: int,
+    num_cols: int,
 ) -> list[int]:
     if cfgan_mode == CFGANMode.ITEM_BASED:
-        num_cols, num_rows = urm.shape
-    else:
-        num_rows, num_cols = urm.shape
+        num_cols, num_rows = num_rows, num_cols
 
     return [
         math.floor(num_cols / 2),
@@ -397,23 +396,15 @@ def run_concerns_experiments(
     include_cfgan_with_class_condition: bool,
     include_cfgan_without_early_stopping: bool,
     dask_interface: DaskInterface,
+    dataset_interface: commons.DatasetInterface,
 ) -> None:
-    for dataset in commons.datasets():
-        future_urm_train = dask_interface.scatter_data(
-            data=dataset.urm_train,
-        )
-        future_urm_validation = dask_interface.scatter_data(
-            data=dataset.urm_validation,
-        )
-        future_urm_test = dask_interface.scatter_data(
-            data=dataset.urm_test,
-        )
-
+    for dataset in dataset_interface.scattered_datasets:
         if include_cfgan_with_random_noise:
             for cfgan_mode, cfgan_mask_type in reproducibility.cfgan_hyper_parameter_search_settings():
                 for noise_size in calculate_random_noise_sizes(
                     cfgan_mode=cfgan_mode,
-                    urm=dataset.urm_train
+                    num_rows=dataset.num_rows,
+                    num_cols=dataset.num_cols,
                 ):
                     dask_interface.submit_job(
                         job_key=(
@@ -436,9 +427,9 @@ def run_concerns_experiments(
                         method=_run_experiment_cfgan_with_random_noise,
                         method_kwargs={
                             "benchmark": dataset.benchmark,
-                            "urm_train": future_urm_train,
-                            "urm_validation": future_urm_validation,
-                            "urm_test": future_urm_test,
+                            "urm_train": dataset.urm_train,
+                            "urm_validation": dataset.urm_validation,
+                            "urm_test": dataset.urm_test,
                             "cfgan_mode": cfgan_mode,
                             "cfgan_mask_type": cfgan_mask_type,
                             "cfgan_noise_size": noise_size,
@@ -466,9 +457,9 @@ def run_concerns_experiments(
                     method=_run_experiment_cfgan_with_class_condition,
                     method_kwargs={
                         "benchmark": dataset.benchmark,
-                        "urm_train": future_urm_train,
-                        "urm_validation": future_urm_validation,
-                        "urm_test": future_urm_test,
+                        "urm_train": dataset.urm_train,
+                        "urm_validation": dataset.urm_validation,
+                        "urm_test": dataset.urm_test,
                         "cfgan_mode": cfgan_mode,
                         "cfgan_mask_type": cfgan_mask_type,
                     }
@@ -495,9 +486,9 @@ def run_concerns_experiments(
                     method=_run_experiment_cfgan_without_early_stopping,
                     method_kwargs={
                         "benchmark": dataset.benchmark,
-                        "urm_train": future_urm_train,
-                        "urm_validation": future_urm_validation,
-                        "urm_test": future_urm_test,
+                        "urm_train": dataset.urm_train,
+                        "urm_validation": dataset.urm_validation,
+                        "urm_test": dataset.urm_test,
                         "cfgan_mode": cfgan_mode,
                         "cfgan_mask_type": cfgan_mask_type,
                     }
@@ -545,7 +536,8 @@ def _print_article_accuracy_and_beyond_accuracy_metrics(
                 if recommender_class == RandomNoiseCFGANRecommender:
                     for random_noise_size in calculate_random_noise_sizes(
                         cfgan_mode=cfgan_mode,
-                        urm=urm,
+                        num_rows=urm.shape[0],
+                        num_cols=urm.shape[1],
                     ):
                         recommender_instance = recommender_class(
                             urm_train=urm,
@@ -610,7 +602,8 @@ def _print_accuracy_and_beyond_accuracy_metrics(
             if recommender_class == RandomNoiseCFGANRecommender:
                 for random_noise_size in calculate_random_noise_sizes(
                     cfgan_mode=cfgan_mode,
-                    urm=urm,
+                    num_rows=urm.shape[0],
+                    num_cols=urm.shape[1],
                 ):
                     recommender_instance = recommender_class(
                         urm_train=urm,
@@ -649,8 +642,10 @@ def _print_accuracy_and_beyond_accuracy_metrics(
     )
 
 
-def print_accuracy_and_beyond_accuracy_metrics():
-    for dataset in commons.datasets():
+def print_accuracy_and_beyond_accuracy_metrics(
+    dataset_interface: commons.DatasetInterface,
+):
+    for dataset in dataset_interface.datasets:
         urm = dataset.urm_train + dataset.urm_validation
 
         num_test_users: int = np.sum(np.ediff1d(dataset.urm_test.indptr) >= 1)
@@ -674,7 +669,9 @@ def print_accuracy_and_beyond_accuracy_metrics():
         )
 
 
-def print_epochs():
+def print_epochs(
+    dataset_interface: commons.DatasetInterface,
+):
     """
     This creates a pandas table with the following structure:
 
@@ -701,7 +698,7 @@ def print_epochs():
         column_adjusted_num_epochs,
     ]
 
-    for benchmark in commons.BENCHMARKS:
+    for benchmark in dataset_interface.benchmarks:
         dataframe_data: dict[int, dict[str, Any]] = {}
         data_index = 0
 
@@ -820,6 +817,12 @@ def print_epochs():
             )
 
 
-def print_concerns_results() -> None:
-    print_accuracy_and_beyond_accuracy_metrics()
-    print_epochs()
+def print_concerns_results(
+    dataset_interface: commons.DatasetInterface
+) -> None:
+    print_accuracy_and_beyond_accuracy_metrics(
+        dataset_interface=dataset_interface
+    )
+    print_epochs(
+        dataset_interface=dataset_interface
+    )

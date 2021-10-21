@@ -15,8 +15,18 @@ def dask_interface() -> DaskInterface:
     return configure_dask_cluster()
 
 
+@pytest.fixture
+def dataset_interface(dask_interface: DaskInterface) -> commons.DatasetInterface:
+    return commons.DatasetInterface(
+        dask_interface=dask_interface,
+        benchmarks=[CFGANBenchmarks.CIAO],
+        priorities=[1],
+    )
+
+
 def patch_cfgan_recommender_early_stopping(
     test_folder: str,
+    benchmarks: list[CFGANBenchmarks],
 ) -> None:
     from unittest.mock import MagicMock
     import experiments.reproducibility
@@ -42,7 +52,9 @@ def patch_cfgan_recommender_early_stopping(
     experiments.commons.FOLDERS.add(reproducibility.HYPER_PARAMETER_TUNING_EXPERIMENTS_DIR)
     experiments.commons.FOLDERS.add(reproducibility.ARTICLE_ACCURACY_METRICS_BASELINES_LATEX_DIR)
     experiments.commons.FOLDERS.add(reproducibility.ACCURACY_METRICS_BASELINES_LATEX_DIR)
-    experiments.commons.create_necessary_folders()
+    experiments.commons.create_necessary_folders(
+        benchmarks=benchmarks,
+    )
 
     experiments.reproducibility.ALGORITHM_NAME = "CFGAN"
     experiments.reproducibility.CONFERENCE_NAME = "CIKM"
@@ -108,16 +120,15 @@ class TestReproducibilityExperiments:
     def test_run_reproducibility_experiments_and_print_results(
         self,
         dask_interface: DaskInterface,
+        dataset_interface: commons.DatasetInterface,
         tmp_path: Path,
     ):
         # Arrange
         test_folder = str(tmp_path.resolve())
         patch_cfgan_recommender_early_stopping(
             test_folder=test_folder,
+            benchmarks=dataset_interface.benchmarks,
         )
-
-        commons.BENCHMARKS = [CFGANBenchmarks.CIAO]
-        commons.DATASET_PRIORITIES = [1]
 
         # Act
 
@@ -133,6 +144,7 @@ class TestReproducibilityExperiments:
                 method=patch_cfgan_recommender_early_stopping,
                 method_kwargs={
                     "test_folder": test_folder,
+                    "benchmarks": dataset_interface.benchmarks,
                 }
             )
         # Wait to ensure all workers are patched.
@@ -143,11 +155,14 @@ class TestReproducibilityExperiments:
             include_baselines=True,
             include_cfgan=True,
             dask_interface=dask_interface,
+            dataset_interface=dataset_interface,
         )
         dask_interface.wait_for_jobs()
         dask_interface.close()
 
-        reproducibility.print_reproducibility_results()
+        reproducibility.print_reproducibility_results(
+            dataset_interface=dataset_interface,
+        )
 
         # Assert
         expected_results_set = {

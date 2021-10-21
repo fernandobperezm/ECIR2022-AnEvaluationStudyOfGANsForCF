@@ -14,6 +14,15 @@ def dask_interface() -> DaskInterface:
     return configure_dask_cluster()
 
 
+@pytest.fixture
+def dataset_interface(dask_interface: DaskInterface) -> commons.DatasetInterface:
+    return commons.DatasetInterface(
+        dask_interface=dask_interface,
+        benchmarks=[CFGANBenchmarks.CIAO],
+        priorities=[1],
+    )
+
+
 def patch_original_hyper_parameters_call() -> None:
     from unittest.mock import MagicMock
     import experiments.replication
@@ -54,6 +63,7 @@ class TestReplicationExperiment:
     def test_run_replicability_experiments_and_print_results(
         self,
         dask_interface: DaskInterface,
+        dataset_interface: commons.DatasetInterface,
         tmp_path: Path,
     ):
         # Arrange
@@ -98,11 +108,11 @@ class TestReplicationExperiment:
         )
         replication.NUMBER_OF_EXECUTIONS = self.TEST_NUM_REPLICATIONS
 
-        commons.BENCHMARKS = [CFGANBenchmarks.CIAO]
-        commons.DATASET_PRIORITIES = [1]
         commons.FOLDERS.add(replication.EXPERIMENTS_REPLICATION_DIR)
         commons.FOLDERS.add(replication.EXPERIMENTS_REPLICATION_RESULTS_DIR)
-        commons.create_necessary_folders()
+        commons.create_necessary_folders(
+            benchmarks=dataset_interface.benchmarks,
+        )
 
         # Act
 
@@ -124,11 +134,14 @@ class TestReplicationExperiment:
         # Now run the experiments for real.
         replication.run_replicability_experiments(
             dask_interface=dask_interface,
+            dataset_interface=dataset_interface,
         )
         dask_interface.wait_for_jobs()
         dask_interface.close()
 
-        replication.print_replicability_results()
+        replication.print_replicability_results(
+            dataset_interface=dataset_interface,
+        )
 
         # Assert
         assert set(os.listdir(replication.EXPERIMENTS_REPLICATION_DIR)) == set(

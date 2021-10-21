@@ -3,10 +3,10 @@ from pathlib import Path
 
 import pytest
 
-import experiments.commons as commons
 import experiments.concerns as concerns
 import experiments.reproducibility as reproducibility
 from conferences.cikm.cfgan.our_implementation.constants import CFGANBenchmarks
+from experiments.commons import DatasetInterface
 from recsys_framework.Utils.conf_dask import configure_dask_cluster, DaskInterface, _DASK_CONF
 
 
@@ -15,8 +15,18 @@ def dask_interface() -> DaskInterface:
     return configure_dask_cluster()
 
 
+@pytest.fixture
+def dataset_interface(dask_interface: DaskInterface) -> DatasetInterface:
+    return DatasetInterface(
+        dask_interface=dask_interface,
+        benchmarks=[CFGANBenchmarks.CIAO],
+        priorities=[1],
+    )
+
+
 def patch_concerns(
     test_folder: str,
+    benchmarks: list[CFGANBenchmarks],
 ) -> None:
     import experiments.concerns
     import experiments.commons
@@ -45,7 +55,9 @@ def patch_concerns(
     experiments.commons.FOLDERS.add(experiments.concerns.SINGLE_EXECUTION_EXPERIMENTS_CONCERNS_DIR)
     experiments.commons.FOLDERS.add(experiments.concerns.ARTICLE_ACCURACY_METRICS_BASELINES_LATEX_DIR)
     experiments.commons.FOLDERS.add(experiments.concerns.ACCURACY_METRICS_BASELINES_LATEX_DIR)
-    experiments.commons.create_necessary_folders()
+    experiments.commons.create_necessary_folders(
+        benchmarks=benchmarks,
+    )
 
     experiments.concerns.EPOCHS_COMPARISON_RESULTS_FILE = os.path.join(
         experiments.concerns.ACCURACY_METRICS_BASELINES_LATEX_DIR,
@@ -55,6 +67,7 @@ def patch_concerns(
 
 def patch_reproducibility(
     test_folder: str,
+    benchmarks: list[CFGANBenchmarks],
 ) -> None:
     from unittest.mock import MagicMock
     import experiments.reproducibility
@@ -80,7 +93,9 @@ def patch_reproducibility(
     experiments.commons.FOLDERS.add(experiments.reproducibility.HYPER_PARAMETER_TUNING_EXPERIMENTS_DIR)
     experiments.commons.FOLDERS.add(experiments.reproducibility.ARTICLE_ACCURACY_METRICS_BASELINES_LATEX_DIR)
     experiments.commons.FOLDERS.add(experiments.reproducibility.ACCURACY_METRICS_BASELINES_LATEX_DIR)
-    experiments.commons.create_necessary_folders()
+    experiments.commons.create_necessary_folders(
+        benchmarks=benchmarks,
+    )
 
     experiments.reproducibility.ALGORITHM_NAME = "CFGAN"
     experiments.reproducibility.CONFERENCE_NAME = "CIKM"
@@ -134,19 +149,19 @@ class TestConcernsExperiments:
     def test_run_reproducibility_experiments_and_print_results(
         self,
         dask_interface: DaskInterface,
+        dataset_interface: DatasetInterface,
         tmp_path: Path,
     ):
         # Arrange
         test_folder = str(tmp_path.resolve())
         patch_reproducibility(
             test_folder=test_folder,
+            benchmarks=dataset_interface.benchmarks,
         )
         patch_concerns(
             test_folder=test_folder,
+            benchmarks=dataset_interface.benchmarks,
         )
-
-        commons.BENCHMARKS = [CFGANBenchmarks.CIAO]
-        commons.DATASET_PRIORITIES = [1]
 
         # Act
 
@@ -162,6 +177,7 @@ class TestConcernsExperiments:
                 method=patch_reproducibility,
                 method_kwargs={
                     "test_folder": test_folder,
+                    "benchmarks": dataset_interface.benchmarks,
                 }
             )
 
@@ -176,6 +192,7 @@ class TestConcernsExperiments:
                 method=patch_concerns,
                 method_kwargs={
                     "test_folder": test_folder,
+                    "benchmarks": dataset_interface.benchmarks,
                 }
             )
 
@@ -186,6 +203,7 @@ class TestConcernsExperiments:
             include_baselines=False,
             include_cfgan=True,
             dask_interface=dask_interface,
+            dataset_interface=dataset_interface,
         )
         dask_interface.wait_for_jobs()
 
@@ -195,11 +213,14 @@ class TestConcernsExperiments:
             include_cfgan_with_class_condition=True,
             include_cfgan_without_early_stopping=True,
             dask_interface=dask_interface,
+            dataset_interface=dataset_interface,
         )
         dask_interface.wait_for_jobs()
         dask_interface.close()
 
-        concerns.print_concerns_results()
+        concerns.print_concerns_results(
+            dataset_interface=dataset_interface,
+        )
 
         # Assert
         expected_results_set = {

@@ -200,8 +200,9 @@ def _run_iteration_original_cfgan_code(
 
 def run_replicability_experiments(
     dask_interface: DaskInterface,
+    dataset_interface: commons.DatasetInterface,
 ) -> None:
-    for priority, benchmark in zip(commons.DATASET_PRIORITIES, commons.BENCHMARKS):
+    for priority, benchmark in zip(dataset_interface.priorities, dataset_interface.benchmarks):
         results_folder = EXPERIMENTS_REPLICATION_DIR.format(
             benchmark=benchmark.value
         )
@@ -233,11 +234,13 @@ def run_replicability_experiments(
 #                                Experiment 1. Original Code Execution                             #
 ####################################################################################################
 ####################################################################################################
-def _print_results_original_cfgan_code() -> None:
+def _print_results_original_cfgan_code(
+    dataset_interface: commons.DatasetInterface,
+) -> None:
     results_dict = dict()
     result_number = 0
 
-    for benchmark in commons.BENCHMARKS:
+    for benchmark in dataset_interface.benchmarks:
         results_folder = EXPERIMENTS_REPLICATION_DIR.format(
             benchmark=benchmark.value
         )
@@ -400,6 +403,10 @@ def _print_originally_published_results():
     )
 
 
-def print_replicability_results():
-    _print_results_original_cfgan_code()
+def print_replicability_results(
+    dataset_interface: commons.DatasetInterface,
+):
+    _print_results_original_cfgan_code(
+        dataset_interface=dataset_interface,
+    )
     _print_originally_published_results()

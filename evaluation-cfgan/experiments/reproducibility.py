@@ -1,7 +1,7 @@
 import itertools
 import os
 import uuid
-from collections import Iterator
+from collections.abc import Iterator
 from typing import Type, Optional
 
 import attr
@@ -472,17 +472,9 @@ def run_reproducibility_experiments(
     include_baselines: bool,
     include_cfgan: bool,
     dask_interface: DaskInterface,
+    dataset_interface: commons.DatasetInterface,
 ) -> None:
-    for dataset in commons.datasets():
-        future_urm_train = dask_interface.scatter_data(
-            data=dataset.urm_train,
-        )
-        future_urm_validation = dask_interface.scatter_data(
-            data=dataset.urm_validation,
-        )
-        future_urm_test = dask_interface.scatter_data(
-            data=dataset.urm_test,
-        )
+    for dataset in dataset_interface.scattered_datasets:
         if include_baselines:
             for recommender in ARTICLE_BASELINES:
                 dask_interface.submit_job(
@@ -500,9 +492,9 @@ def run_reproducibility_experiments(
                     method=_run_baselines_hyper_parameter_tuning,
                     method_kwargs={
                         "benchmark": dataset.benchmark,
-                        "urm_train": future_urm_train,
-                        "urm_validation": future_urm_validation,
-                        "urm_test": future_urm_test,
+                        "urm_train": dataset.urm_train,
+                        "urm_validation": dataset.urm_validation,
+                        "urm_test": dataset.urm_test,
                         "recommender": recommender,
                     }
                 )
@@ -528,9 +520,9 @@ def run_reproducibility_experiments(
                     method=_run_cfgan_with_early_stopping_hyper_parameter_tuning,
                     method_kwargs={
                         "benchmark": dataset.benchmark,
-                        "urm_train": future_urm_train,
-                        "urm_validation": future_urm_validation,
-                        "urm_test": future_urm_test,
+                        "urm_train": dataset.urm_train,
+                        "urm_validation": dataset.urm_validation,
+                        "urm_test": dataset.urm_test,
                         "cfgan_mode": cfgan_mode,
                         "cfgan_mask_type": cfgan_mask_type,
                     }
@@ -589,8 +581,10 @@ def _print_hyper_parameter_tuning_accuracy_and_beyond_accuracy_metrics(
     )
 
 
-def print_reproducibility_results() -> None:
-    for dataset in commons.datasets():
+def print_reproducibility_results(
+    dataset_interface: commons.DatasetInterface,
+) -> None:
+    for dataset in dataset_interface.datasets:
         urm = dataset.urm_train + dataset.urm_validation
 
         num_test_users: int = np.sum(np.ediff1d(dataset.urm_test.indptr) >= 1)

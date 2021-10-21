@@ -3,7 +3,8 @@ from __future__ import annotations
 
 from tap import Tap
 
-from experiments.commons import create_necessary_folders
+from conferences.cikm.cfgan.our_implementation.constants import CFGANBenchmarks
+from experiments.commons import create_necessary_folders, DatasetInterface
 from experiments.concerns import run_concerns_experiments, print_concerns_results
 from experiments.replication import run_replicability_experiments, print_replicability_results
 from experiments.reproducibility import run_reproducibility_experiments, print_reproducibility_results
@@ -62,13 +63,30 @@ if __name__ == '__main__':
 
     logger = get_logger(__name__)
 
-    create_necessary_folders()
-
     dask_interface = configure_dask_cluster()
+
+    dataset_interface = DatasetInterface(
+        dask_interface=dask_interface,
+        priorities=[
+            30,
+            20,
+            10,
+        ],
+        benchmarks=[
+            CFGANBenchmarks.ML1M,
+            CFGANBenchmarks.ML100K,
+            CFGANBenchmarks.CIAO,
+        ],
+    )
+
+    create_necessary_folders(
+        benchmarks=dataset_interface.benchmarks
+    )
 
     if input_flags.run_replicability:
         run_replicability_experiments(
             dask_interface=dask_interface,
+            dataset_interface=dataset_interface,
         )
 
     if input_flags.run_reproducibility:
@@ -76,6 +94,7 @@ if __name__ == '__main__':
             include_baselines=input_flags.include_baselines,
             include_cfgan=input_flags.include_cfgan,
             dask_interface=dask_interface,
+            dataset_interface=dataset_interface,
         )
 
     if input_flags.run_concerns:
@@ -84,17 +103,24 @@ if __name__ == '__main__':
             include_cfgan_with_class_condition=input_flags.include_cfgan_with_class_condition,
             include_cfgan_without_early_stopping=input_flags.include_cfgan_without_early_stopping,
             dask_interface=dask_interface,
+            dataset_interface=dataset_interface,
         )
 
     dask_interface.wait_for_jobs()
 
     if input_flags.print_replicability_results:
-        print_replicability_results()
+        print_replicability_results(
+            dataset_interface=dataset_interface,
+        )
 
     if input_flags.print_reproducibility_results:
-        print_reproducibility_results()
+        print_reproducibility_results(
+            dataset_interface=dataset_interface,
+        )
 
     if input_flags.print_concerns_results:
-        print_concerns_results()
+        print_concerns_results(
+            dataset_interface=dataset_interface,
+        )
 
     dask_interface.close()
