@@ -90,8 +90,6 @@ ACCURACY_METRICS_LIST = [
     "MRR",
     "NDCG",
     "F1",
-    "HIT_RATE",
-    "ARHR",
 ]
 BEYOND_ACCURACY_METRICS_LIST = [
     "NOVELTY",

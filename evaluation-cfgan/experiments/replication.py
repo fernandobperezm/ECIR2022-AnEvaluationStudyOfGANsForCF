@@ -337,14 +337,10 @@ def _print_results_original_cfgan_code(
         replicated_results_mean_and_std = results_dataframe_with_mean_and_std.copy()
         replicated_results_mean_and_std[(STAT_COLUMN, "")] = r"$\text{Mean} \pm \text{Std}$"
 
-        replicated_results_min_and_max = results_dataframe_with_min_and_max.copy()
-        replicated_results_min_and_max[(STAT_COLUMN, "")] = "Range"
-
         original_results_and_replicated_results = pd.concat(
             objs=[
                 copy_original_results,
                 replicated_results_mean_and_std,
-                replicated_results_min_and_max,
             ],
             axis=0
         )
