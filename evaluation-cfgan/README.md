@@ -17,7 +17,7 @@ our project on [ResearchGate](https://www.researchgate.net/project/Recommender-s
 ### Starting point
 The only starting point to execute the experiments is the script [main.py](main.py), which executes certain experiments and
 prints their results based on console arguments. Please, refer to the [Installation](#installation) and then the 
-[Experiments](#experiments) sections to know how to install the dependencies of the project in your OS and how to run
+[Experiments](#experiments-source-code) sections to know how to install the dependencies of the project in your OS and how to run
 our experiments, respectively.
 
 ### CFGAN source code.
@@ -45,15 +45,15 @@ Additionally, you'll find the following scripts:
 - `constants.py`: Contains useful enums to describe CFGAN features, like `mode`, `variant`, etc.
 - `parameters.py`: Contains classes describing the hyper-parameters of CFGAN and other implementations. 
 
-### Experiments
+### Experiments source code
 
 The `experiments` folder contains scripts related to each of our experiments in the paper, specifically:
-- `commons.py`: Contains common code used by two or more experiments.
-- `replication.py`: Contains the source code to run and print the results of the replication experiments 
+- [commons.py](experiments/commons.py): Contains common code used by two or more experiments.
+- [replication.py](experiments/replication.py): Contains the source code to run and print the results of the replication experiments 
    (RQ1 in the paper.)
-- `reproducibility.py`: Contains the source code to run and print the results of the reproducibility experiments 
+- [reproducibility.py](experiments/reproducibility.py): Contains the source code to run and print the results of the reproducibility experiments 
    (RQ2 in the paper.)
-- `concerns.py`: Contains the source code to run and print the results of the concerns experiments (RQ3 in the paper.)
+- [concerns.py](experiments/concerns.py): Contains the source code to run and print the results of the concerns experiments (RQ3 in the paper.)
 
 ## Installation
 
@@ -181,8 +181,26 @@ default by changing the `num_workers` key inside the `pyproject.toml` file. For 
 then change the key to `num_workers = 2`. If you want to disable parallelism, then set the key to `num_workers = 1`.
 
 ### Download results
-If you are only interested in exporting our results, then you must download our data splits and results from [here](). 
-Then you must place these folders in the root of the project (i.e., inside the `evaluation_cfgan` folder).
+If you are only interested in exporting our results, then you must download our data splits from 
+[here](https://polimi365-my.sharepoint.com/:u:/g/personal/10565493_polimi_it/ESajcZZTCFhKhzPWpRP47zEBSdzRLxPl_rESEP2wcoEklg?e=AadWHv) 
+and our trained models (a folder called `result_experiments`) from 
+[here](https://polimi365-my.sharepoint.com/:u:/g/personal/10565493_polimi_it/Eeg2czvCPY9FtT8220wu3e8BBh4f60QZLz35MAnNJVQJxQ?e=46EH6c). 
+Once downloaded, uncompress these files inside the `evaluation_cfgan` folder. Your tree must look like the following:
+
+```
+an-evaluation-of-GAN-for-CF-ecir-2022-submission/
+  |
+  |----> evaluation-cfgan/
+  |      |
+  |      |---->conferences/
+  |      |---->experiments/
+  |      |---->data_split/ (uncompressed data split folder)
+  |      |---->result_experiments/ (uncompressed result_experiments folder)
+  |      | ...
+  |----> recsys_framework/
+  |      | ...
+  ...
+```
 
 ### Replicability of CFGAN.
 The main script [main.py](main.py) executes and prints the results of the _replicability_ experiments.
@@ -192,7 +210,7 @@ poetry run python main.py \
  --print_replicability_results
 ```
 
-The file [replicability.py](experiments/replicability.py) contains all the source code related to the replicability 
+The file [replicability.py](experiments/replication.py) contains all the source code related to the replicability 
 experiments. If you wish to change the number of replicability executions, just reassign the variable 
 `NUMBER_OF_EXECUTIONS`. Originally, it is set as `NUMBER_OF_EXECUTIONS = 30`.
 
