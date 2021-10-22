@@ -58,10 +58,10 @@ The `experiments` folder contains scripts related to each of our experiments in 
 ## Installation
 
 Note that this repository requires `Python 3.9`, `poetry`, `Cython`, and the 
-[recsys_framework](../recsys-framework/README.md).
+[recsys_framework](../recsys-framework/README.md) and we tested our installation against [Linux](#linux-installation) 
+and [macOS](#macos-installation). Currently, we do not support installations on Windows.
 
-All Cython algorithms needs to be compiled for your specific environment: 
-- [Windows](#windows-installation)
+All Cython algorithms needs to be compiled for your specific environment:
 - [Linux](#linux-installation)
 - [macOS](#macos-installation). 
 
@@ -129,42 +129,6 @@ through all the steps needed to execute our experiments.
     curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py | python3 -
     ```
 - Download dependencies using `poetry`
-  ```bash
-  poetry install
-  ```
- 
-### Windows Installation
-- Download repo:
-  ```bash
-  git clone https://github.com/fernandobperezm/evaluation-cfgan.git
-  cd evaluation-cfgan/
-  ```
-- `Build Tools for Visual Studio 2019` from
-  [this page](https://visualstudio.microsoft.com/downloads/#build-tools-for-visual-studio-2019). Required to have a
-  `C` compiler installed in your PC. While inside the installer make sure to tick the `C++ Build Tools` or 
-  `Desktop development with C++` checkbox, then proceed with the installation. You'll need to reboot your machine after 
-  it finishes the installation.
-- `Chocolatey` from [this page](https://chocolatey.org/install#install-step2) (using Powershell as administrator)
-  ```bash
-  Set-ExecutionPolicy Bypass -Scope Process -Force; [System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072; iex ((New-Object System.Net.WebClient).DownloadString('https://community.chocolatey.org/install.ps1'))
-  ```
-- `Python 3.9.6`
-  - Using [pyenv](https://github.com/pyenv-win/pyenv-win#installation) (using Powershell as administrator)
-  ```bash
-  choco install pyenv-win
-  ```
-  - Close and reopen your Powershell windows to ensure environment variables are available.
-  - NOTE: If you are running Windows 10 1905 or newer, you might need to disable the built-in Python launcher via
-  Start > "Manage App Execution Aliases" and turning off the "App Installer" aliases for Python.
-- `Poetry` using `pyenv` on Powershell (no need for administrator privileges)
-  ```bash
-  pyenv install 3.9.6
-  pyenv local 3.9.6
-  (Invoke-WebRequest -Uri https://raw.githubusercontent.com/python-poetry/poetry/master/install-poetry.py -UseBasicParsing).Content | python3 -
-  ```
-  - Add `Poetry` to the `PATH` variable [intructions here](https://www.architectryan.com/2018/03/17/add-to-the-path-on-windows-10/)
-    - Poetry is installed by default on `%APPDATA%\Python\Scripts`.
-- Download dependencies using `poetry` 
   ```bash
   poetry install
   ```
