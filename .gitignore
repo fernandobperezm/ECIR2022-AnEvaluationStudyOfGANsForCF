@@ -10,6 +10,7 @@ __pycache__/
 **/Data_manager_split_datasets/**
 **/Data_manager_offline_datasets/**
 **/result_experiments/*
+**/data_split/*
 **/data/*
 __*/
 
