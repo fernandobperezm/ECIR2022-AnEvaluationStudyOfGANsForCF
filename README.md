@@ -1,3 +1,5 @@
+[![DOI](https://zenodo.org/badge/419178547.svg)](https://zenodo.org/badge/latestdoi/419178547)
+
 # An Evaluation of Generative Adversarial Networks for Collaborative Filtering.
 This repository was developed by [Fernando B. Pérez Maurera](https://github.com/fernandobperezm). Fernando is a Ph.D.
 student at Politecnico di Milano. 
