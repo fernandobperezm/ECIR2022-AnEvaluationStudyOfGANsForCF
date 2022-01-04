@@ -3,8 +3,7 @@ This repository was developed by [Fernando B. Pérez Maurera](https://github.com
 student at Politecnico di Milano. 
 
 This repository contains the source code of the following articles:
-* An Evaluation Study of Generative Adversarial Networks for Collaborative Filtering. Accepted to ECIR
-  2022.
+* An Evaluation Study of Generative Adversarial Networks for Collaborative Filtering. Fernando Benjamín Pérez Maurera, Maurizio Ferrari Dacrema, and Paolo Cremonesi. Accepted to ECIR 2022.
 
 See our [website](http://recsys.deib.polimi.it/) for more information on our research group. We are actively pursuing
 this research direction in evaluation and reproducibility, we are open to collaboration with other researchers. Follow
