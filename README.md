@@ -1,10 +1,11 @@
-# An evaluation of Generative Adversarial Networks for Collaborative Filtering.
+[![DOI](https://zenodo.org/badge/419178547.svg)](https://zenodo.org/badge/latestdoi/419178547)
+
+# An Evaluation of Generative Adversarial Networks for Collaborative Filtering.
 This repository was developed by [Fernando B. Pérez Maurera](https://github.com/fernandobperezm). Fernando is a Ph.D.
 student at Politecnico di Milano. 
 
 This repository contains the source code of the following articles:
-* (Under Review) An Evaluation Study of Generative Adversarial Networks for Collaborative Filtering. Submitted to ECIR
-  2022.
+* An Evaluation Study of Generative Adversarial Networks for Collaborative Filtering. Fernando Benjamín Pérez Maurera, Maurizio Ferrari Dacrema, and Paolo Cremonesi. Accepted to ECIR 2022.
 
 See our [website](http://recsys.deib.polimi.it/) for more information on our research group. We are actively pursuing
 this research direction in evaluation and reproducibility, we are open to collaboration with other researchers. Follow
