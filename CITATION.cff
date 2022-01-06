@@ -1,0 +1,75 @@
+# This CITATION.cff file was generated with cffinit.
+# Visit https://bit.ly/cffinit to generate yours today!
+cff-version: 1.2.0
+title: >-
+  An Evaluation Study of Generative Adversarial Networks for Collaborative Filtering - Supplemental Material
+message: >-
+  If you use this software, please cite both the article from 'preferred-citation' and the software itself.
+type: software
+authors:
+  - given-names: Fernando Benjamín
+    family-names: Pérez Maurera
+    email: fernandobenjamin.perez@polimi.it
+    affiliation: Politecnico di Milano & ContentWise
+    orcid: 'https://orcid.org/0000-0001-6578-7404'
+  - given-names: Maurizio
+    family-names: Ferrari Dacrema
+    email: maurizio.ferrari@polimi.it
+    affiliation: Politecnico di Milano
+    orcid: 'https://orcid.org/0000-0001-7103-2788'
+  - given-names: Paolo
+    family-names: Cremonesi
+    email: paolo.cremonesi@polimi.it
+    affiliation: Politecnico di Milano
+    orcid: 'https://orcid.org/0000-0002-1253-8081'
+identifiers:
+  - type: doi
+    value: 10.5281/zenodo.5819029
+    description: The concept DOI of the work.
+  - type: doi
+    value: 10.5281/zenodo.5823022
+    description: >-
+      The versioned DOI for version 1.1.0 (camera-ready) of the work.
+  - type: url
+    value: >-
+      https://github.com/fernandobperezm/an-evaluation-of-GAN-for-CF/releases/tag/v1.1.0-ecir-2022-camera-ready
+    description: >-
+      The GitHub release URL of tag 1.1.0 (camera-ready) of the work.
+repository-code: >-
+  https://github.com/fernandobperezm/an-evaluation-of-GAN-for-CF
+abstract: >-
+  This repository contains the source code and data used in our experiments described in the paper "An evaluation of Generative Adversarial Networks for Collaborative Filtering". Refer to the README file to run our experiments.
+keywords:
+  - evaluation
+  - collaborative-filtering
+  - generative-adversarial-networks
+  - recommender-systems
+license: AGPL-3.0
+preferred-citation:
+  authors:
+    - given-names: Fernando Benjamín
+      family-names: Pérez Maurera
+      email: fernandobenjamin.perez@polimi.it
+      affiliation: Politecnico di Milano & ContentWise
+      orcid: 'https://orcid.org/0000-0001-6578-7404'
+    - given-names: Maurizio
+      family-names: Ferrari Dacrema
+      email: maurizio.ferrari@polimi.it
+      affiliation: Politecnico di Milano
+      orcid: 'https://orcid.org/0000-0001-7103-2788'
+    - given-names: Paolo
+      family-names: Cremonesi
+      email: paolo.cremonesi@polimi.it
+      affiliation: Politecnico di Milano
+      orcid: 'https://orcid.org/0000-0002-1253-8081'
+  title: >-
+    An Evaluation Study of Generative Adversarial Networks for Collaborative Filtering
+  abstract: >-
+    This work explores the reproducibility of CFGAN. CFGAN and its family of models (TagRec, MTPR, and CRGAN) learn to generate personalized and fake-but-realistic rankings of preferences for top-N recommendations by using previous interactions. This work successfully replicates the results published in the original paper and discusses the impact of certain differences between the CFGAN framework and the model used in the original evaluation. The absence of random noise and the use of real user profiles as condition vectors leaves the generator prone to learn a degenerate solution in which the output vector is identical to the input vector, therefore, behaving essentially as a simple autoencoder. The work further expands the experimental analysis comparing CFGAN against a selection of simple and well-known properly optimized baselines, observing that CFGAN is not consistently competitive against them despite its high computational cost. To ensure the reproducibility of these analyses, this work describes the experimental methodology and publishes all datasets and source code.
+  keywords:
+    - Generative Adversarial Networks
+    - Recommender Systems
+    - Collaborative Filtering
+    - Reproducibility
+  type: conference-paper
+  year: 2022
