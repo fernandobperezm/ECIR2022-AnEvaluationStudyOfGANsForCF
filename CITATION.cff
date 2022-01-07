@@ -23,20 +23,19 @@ authors:
     affiliation: Politecnico di Milano
     orcid: 'https://orcid.org/0000-0002-1253-8081'
 identifiers:
+  - type: other
+    value: "arXiv:2201.01815"
+    description: The ArXiv preprint of the paper.
   - type: doi
     value: 10.5281/zenodo.5819029
     description: The concept DOI of the work.
   - type: doi
     value: 10.5281/zenodo.5823022
-    description: >-
-      The versioned DOI for version 1.1.0 (camera-ready) of the work.
+    description: The versioned DOI for version 1.1.0 (camera-ready) of the work.
   - type: url
-    value: >-
-      https://github.com/fernandobperezm/an-evaluation-of-GAN-for-CF/releases/tag/v1.1.0-ecir-2022-camera-ready
-    description: >-
-      The GitHub release URL of tag 1.1.0 (camera-ready) of the work.
-repository-code: >-
-  https://github.com/fernandobperezm/an-evaluation-of-GAN-for-CF
+    value: https://github.com/fernandobperezm/an-evaluation-of-GAN-for-CF/releases/tag/v1.1.0-ecir-2022-camera-ready
+    description: The GitHub release URL of tag 1.1.0 (camera-ready) of the work.
+repository-code: https://github.com/fernandobperezm/an-evaluation-of-GAN-for-CF
 abstract: >-
   This repository contains the source code and data used in our experiments described in the paper "An evaluation of Generative Adversarial Networks for Collaborative Filtering". Refer to the README file to run our experiments.
 keywords:
