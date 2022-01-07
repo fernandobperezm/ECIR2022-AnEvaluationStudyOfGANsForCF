@@ -45,6 +45,7 @@ keywords:
   - recommender-systems
 license: AGPL-3.0
 preferred-citation:
+  message: If you use this software, please cite both the article from 'preferred-citation' and the software itself.
   authors:
     - given-names: Fernando Benjamín
       family-names: Pérez Maurera
