@@ -32,7 +32,7 @@ identifiers:
     value: 10.5281/zenodo.5879345
     description: The versioned DOI for version 1.1.1 (camera-ready) of the work.
   - type: url
-    value: https://github.com/recsyspolimi/an-evaluation-of-GAN-for-CF/releases/tag/v1.1.1-ecir-2022-camera-ready
+    value: https://github.com/recsyspolimi/ecir-2022-an-evaluation-of-GAN-for-CF/releases/tag/v1.1.1-ecir-2022-camera-ready
     description: The GitHub release URL of tag 1.1.1 (camera-ready) of the work.
 repository-code: https://github.com/recsyspolimi/an-evaluation-of-GAN-for-CF
 abstract: >-
