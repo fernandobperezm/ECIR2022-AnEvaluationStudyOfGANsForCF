@@ -8,7 +8,7 @@ student at Politecnico di Milano.
 This repository contains the source code of the following articles:
 * An Evaluation Study of Generative Adversarial Networks for Collaborative Filtering. 
   Fernando Benjamín Pérez Maurera, Maurizio Ferrari Dacrema, and Paolo Cremonesi. ECIR 2022.
-  [arXiv](https://arxiv.org/abs/2201.01815), [GitHub](https://github.com/recsyspolimi/an-evaluation-of-GAN-for-CF), 
+  [arXiv](https://arxiv.org/abs/2201.01815), [GitHub](https://github.com/recsyspolimi/ecir-2022-an-evaluation-of-GAN-for-CF), 
   [Zenodo](https://zenodo.org/badge/latestdoi/419178547)
 
 See our [website](http://recsys.deib.polimi.it/) for more information on our research group. We are actively pursuing
