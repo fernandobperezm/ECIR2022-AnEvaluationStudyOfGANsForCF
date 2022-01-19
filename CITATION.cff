@@ -3,8 +3,7 @@
 cff-version: 1.2.0
 title: >-
   An Evaluation Study of Generative Adversarial Networks for Collaborative Filtering - Supplemental Material
-message: >-
-  If you use this software, please cite both the article from 'preferred-citation' and the software itself.
+message: "If you use this software, please cite both the article from preferred-citation and the software itself."
 type: software
 authors:
   - given-names: Fernando Benjamín
