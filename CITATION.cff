@@ -29,11 +29,11 @@ identifiers:
     value: 10.5281/zenodo.5819029
     description: The concept DOI of the work.
   - type: doi
-    value: 10.5281/zenodo.5823022
-    description: The versioned DOI for version 1.1.0 (camera-ready) of the work.
+    value: 10.5281/zenodo.5879345
+    description: The versioned DOI for version 1.1.1 (camera-ready) of the work.
   - type: url
-    value: https://github.com/recsyspolimi/an-evaluation-of-GAN-for-CF/releases/tag/v1.1.0-ecir-2022-camera-ready
-    description: The GitHub release URL of tag 1.1.0 (camera-ready) of the work.
+    value: https://github.com/recsyspolimi/an-evaluation-of-GAN-for-CF/releases/tag/v1.1.1-ecir-2022-camera-ready
+    description: The GitHub release URL of tag 1.1.1 (camera-ready) of the work.
 repository-code: https://github.com/recsyspolimi/an-evaluation-of-GAN-for-CF
 abstract: >-
   This repository contains the source code and data used in our experiments described in the paper "An evaluation of Generative Adversarial Networks for Collaborative Filtering". Refer to the README file to run our experiments.
